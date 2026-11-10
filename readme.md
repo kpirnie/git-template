@@ -37,7 +37,6 @@ A starting point for new repositories: issue and pull request templates, funding
 [![Packagist](https://img.shields.io/packagist/v/{{PACKAGIST_PACKAGE}}?style=for-the-badge&logo=packagist&logoColor=white&color=F28D1A&labelColor=000&label=Packagist)](https://packagist.org/packages/{{PACKAGIST_PACKAGE}})
 -->
 
-
 ## Using the template
 
 1. Create the new repository from this one (**Use this template**), or copy the files across.
