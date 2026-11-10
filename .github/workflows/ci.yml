@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+# CI ACTION: this job only checks out the code until you enable a stack below.
+# Uncomment the block for this project's language and delete the rest.
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # CI ACTION (PHP only): uncomment to test across PHP versions and dependency sets
+    # strategy:
+    #   matrix:
+    #     php-version: [8.4, 8.5]
+    #     dependencies: [lowest, highest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ---------------------------------------------------------------------
+      # PHP / Composer
+      # ---------------------------------------------------------------------
+      # - name: Setup PHP
+      #   uses: shivammathur/setup-php@v2
+      #   with:
+      #     php-version: ${{ matrix.php-version }}
+      #     coverage: none
+      #
+      # - name: Validate composer.json
+      #   run: composer validate --strict
+      #
+      # - name: Cache Composer packages
+      #   id: composer-cache
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: vendor
+      #     key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-php-${{ matrix.php-version }}-
+      #
+      # - name: Install dependencies
+      #   run: |
+      #     if [ "${{ matrix.dependencies }}" = "lowest" ]; then
+      #       composer update --prefer-lowest --no-interaction --no-progress
+      #     else
+      #       composer install --no-interaction --no-progress
+      #     fi
+      #
+      # - name: Run CodeSniffer
+      #   run: composer run cs-check
+
+      # ---------------------------------------------------------------------
+      # Go
+      # ---------------------------------------------------------------------
+      # - name: Setup Go
+      #   uses: actions/setup-go@v5
+      #   with:
+      #     go-version-file: go.mod
+      #
+      # - name: Vet
+      #   run: go vet ./...
+      #
+      # - name: Build
+      #   run: go build ./...
+
+      # ---------------------------------------------------------------------
+      # Node
+      # ---------------------------------------------------------------------
+      # - name: Setup Node
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 22
+      #     cache: npm
+      #
+      # - name: Install dependencies
+      #   run: npm ci
+      #
+      # - name: Lint
+      #   run: npm run lint
+      #
+      # - name: Build
+      #   run: npm run build
+
+      # ---------------------------------------------------------------------
+      # Python
+      # ---------------------------------------------------------------------
+      # - name: Setup Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: "3.13"
+      #
+      # - name: Install dependencies
+      #   run: pip install -r requirements.txt
+      #
+      # - name: Lint
+      #   run: ruff check .
+
+      # ---------------------------------------------------------------------
+      # Anything else: run the project's own commands
+      # ---------------------------------------------------------------------
+      # - name: Lint
+      #   run: {{LINT_COMMAND}}
+      #
+      # - name: Build
+      #   run: {{BUILD_COMMAND}}

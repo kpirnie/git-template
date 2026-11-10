@@ -1,0 +1,108 @@
+name: Builder
+
+on:
+  push:
+    branches: ["main", "develop"] # Trigger on push to main AND develop
+    # RELEASES: uncomment the two lines below (and the `release` job at the bottom) to release on a version tag
+    # tags:
+    #   - "v*"
+
+jobs:
+  build-and-push:
+    # Branch pushes only, so version tags do not build an image
+    if: github.ref_type == 'branch' 
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Needed to push to GitHub Packages
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # BUILD ACTION: remove the whole `build-and-push` job if the project does not ship a container image
+      # (and drop `needs: build-and-push` from the `release` job if you enable it)
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }} # Auto-generated secret
+
+      - name: Determine image tag
+        id: vars
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "TAG=latest" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "TAG=dev" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # BUILD ACTION: change `context` if the Dockerfile is not in the repository root,
+      # add `file:` if it is not named Dockerfile, and trim `platforms` to what you actually need.
+      # The image name defaults to the repository name; hard-code it here to override.
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ steps.vars.outputs.TAG }}
+            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}
+
+  # ---------------------------------------------------------------------------
+  # TAG + RELEASE + PACKAGIST (disabled by default)
+  #
+  # Runs when a version tag is pushed:  git tag v1.2.3 && git push origin v1.2.3
+  #
+  # To enable:
+  #   1. Uncomment the `tags` trigger at the top of this file.
+  #   2. Uncomment the whole `release` job below.
+  #   3. Add repository secrets (Settings > Secrets and variables > Actions):
+  #        PACKAGIST_USERNAME  - your Packagist username
+  #        PACKAGIST_API_TOKEN - your Packagist API token
+  #   4. Submit the repository on packagist.org once; after that this job keeps it updated.
+  #
+  # Remove the Packagist step for projects that are not Composer packages.
+  # ---------------------------------------------------------------------------
+  # release:
+  #   runs-on: ubuntu-latest
+  #   if: github.ref_type == 'tag'
+  #
+  #   # Add permissions for the GITHUB_TOKEN
+  #   permissions:
+  #     contents: write
+  #
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #
+  #     # RELEASE ACTION: set the PHP version and extensions this project needs, or remove
+  #     # the PHP and dependency steps if there is nothing to install before releasing.
+  #     - name: Setup PHP
+  #       uses: shivammathur/setup-php@v2
+  #       with:
+  #         php-version: 8.4
+  #         extensions: "{{PHP_EXTENSIONS}}" # comma separated, example: redis, apcu
+  #
+  #     - name: Install dependencies
+  #       run: composer install --no-dev --optimize-autoloader
+  #
+  #     - name: Create Release
+  #       run: |
+  #         gh release create ${{ github.ref_name }} \
+  #           --title "Release ${{ github.ref_name }}" \
+  #           --generate-notes
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #
+  #     - name: Trigger Packagist Update
+  #       run: |
+  #         curl -XPOST -H'content-type:application/json' \
+  #           'https://packagist.org/api/update-package?username=${{ secrets.PACKAGIST_USERNAME }}&apiToken=${{ secrets.PACKAGIST_API_TOKEN }}' \
+  #           -d'{"repository":{"url":"${{ github.event.repository.clone_url }}"}}'

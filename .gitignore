@@ -1,0 +1,112 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Secrets and keys
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.history/
+
+# Editor and merge leftovers
+*.bak
+*.orig
+*.rej
+*.old
+
+# OS files
+.DS_Store
+._*
+.AppleDouble
+.Trash-*
+Thumbs.db
+Desktop.ini
+
+# Docker files
+docker-compose.yaml
+docker-compose.yml
+docker-compose.override.yml
+test.yml
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Caches
+.cache/
+.sass-cache/
+
+# Local data and dumps
+*.sqlite
+*.db
+*.sql.gz
+
+# Build directories
+dist/
+build/
+
+# Dependency directories
+vendor/
+node_modules/
+
+# Local-only working folders
+other/
+settings/
+
+# ---------------------------------------------------------------------------
+# PROJECT SPECIFIC: uncomment / add what applies to this project
+# ---------------------------------------------------------------------------
+
+# Compiled binary (set this to the project's binary name)
+# {{BINARY_NAME}}
+
+# Node (libraries only, applications should commit their lockfile)
+# package-lock.json
+
+# Go
+# *.exe
+# *.exe~
+# *.dll
+# *.so
+# *.dylib
+# *.test
+# *.out
+# go.work
+# coverage.txt
+# coverage.html
+# *.cover
+# *.prof
+# *.pprof
+# debug
+# __debug_bin
+# cover.out
+
+# PHP / Composer
+# composer.lock
+# .phpunit.result.cache
+
+# Python
+# __pycache__/
+# *.pyc
+# .venv/
+# venv/
+
+# Generated assets that should not be committed
+# static/{{GENERATED_ASSET}}

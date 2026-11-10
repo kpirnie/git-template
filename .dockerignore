@@ -1,0 +1,32 @@
+# Version control and repository files
+.git/
+.github/
+.gitignore
+.dockerignore
+
+# Environment files
+.env
+.env.*
+
+# Compose files
+docker-compose*
+
+# Dependencies installed during the build
+node_modules/
+
+# IDE files
+.idea/
+.vscode/
+
+# Logs and temporary files
+*.log
+logs/
+tmp/
+temp/
+
+# Coverage output
+coverage*
+*.cover
+
+# Tests
+testing/
